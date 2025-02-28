@@ -273,20 +273,33 @@
                 <button id="dailyBonusBtn" onclick="claimDailyBonus()">বোনাস নিন</button>
                 <p id="bonusTimer">পরবর্তী বোনাস: <span id="countdown">24:00:00</span></p>
             </div>
-            <div class="feature-card">
-                <h3>এডস ক্লিক ১</h3>
-                <button id="adsClick1Btn" onclick="clickAd(1)">এডস ক্লিক করুন</button>
-                <p id="adsClick1Count">ক্লিক: 0/300</p>
-            </div>
-            <div class="feature-card">
-                <h3>এডস ক্লিক ২</h3>
-                <button id="adsClick2Btn" onclick="clickAd(2)">এডস ক্লিক করুন</button>
-                <p id="adsClick2Count">ক্লিক: 0/300</p>
-            </div>
+        <div class="feature-card">
+    <h3>এডস ক্লিক ১</h3>
+    <button id="adsClick1Btn" onclick="clickAd(1)">এডস ক্লিক করুন</button>
+    <p id="adsClick1Count">ক্লিক: 0/300</p>
+</div>
+<div class="feature-card">
+    <h3>এডস ক্লিক ২</h3>
+    <button id="adsClick2Btn" onclick="clickAd(2)">এডস ক্লিক করুন</button>
+    <p id="adsClick2Count">ক্লিক: 0/300</p>
+</div>
             <div class="feature-card">
                 <h3>টিক টাক গেমস</h3>
                 <button onclick="showGame()">গেম খেলুন</button>
             </div>
+
+ <!-- <div class="feature-card">
+                <h3>ফ্ল্যাপি বার্ড</h3>
+                <button onclick="showFlappyBird()">গেম খেলুন</button>
+            </div>
+            <div class="feature-card">
+                <h3>মেমোরি গেম</h3>
+                <button onclick="showMemoryGame()">গেম খেলুন</button>
+            </div>
+            <div class="feature-card">
+                <h3>স্পেস ইনভেডার</h3>
+                <button onclick="showSpaceInvader()">গেম খেলুন</button>
+            </div> -->
         </div>
     </div>
 
@@ -321,7 +334,32 @@
         </div>
     </div>
 
-    <div class="container" id="gameSection" style="display: none;">
+<!-- গেম সেকশন -->
+  <!--  <div class="container" id="gameSection" style="display: none;">
+        <h2 id="currentGameTitle">গেমস</h2>
+        <div class="game-container">
+            <div id="flappyBirdGame" style="display: none;">
+                <h3>ফ্ল্যাপি বার্ড</h3>
+                <canvas id="flappyCanvas" class="game-canvas" width="320" height="480"></canvas>
+                <p id="flappyScore">স্কোর: ০</p>
+                <button class="game-button" onclick="startFlappyBird()">শুরু করুন</button>
+            </div>
+            <div id="memoryGame" style="display: none;">
+                <h3>মেমোরি গেম</h3>
+                <div id="memoryBoard" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;"></div>
+                <p id="memoryScore">স্কোর: ০</p>
+                <button class="game-button" onclick="startMemoryGame()">শুরু করুন</button>
+            </div>
+            <div id="spaceInvaderGame" style="display: none;">
+                <h3>স্পেস ইনভেডার</h3>
+                <canvas id="spaceCanvas" class="game-canvas" width="480" height="320"></canvas>
+                <p id="spaceScore">স্কোর: ০</p>
+                <button class="game-button" onclick="startSpaceInvader()">শুরু করুন</button>
+            </div>
+        </div>
+    </div> -->
+
+<div class="container" id="gameSection" style="display: none;">
         <h2>টিক-ট্যাক-টো গেম</h2>
         <div class="game-container">
             <div class="game-info">
@@ -340,8 +378,9 @@
         </div>
     </div>
 
+
     <script>
-        const GIST_ID = 'f944749344030d6228eed7b09b15d955'; // আপনার গিস্ট আইডি
+       const GIST_ID = 'f944749344030d6228eed7b09b15d955';
         const APP_ID = '1162154'; // আপনার গিটহাব এপ্স আইডি
         const INSTALLATION_ID = '61857809'; // ইনস্টলেশন আইডি
         const PRIVATE_KEY = 'SHA256:8AfcOXOZUvYGEuuy6wmLFut1sq+0scouzssBu5v66HI=\n...'; // আপনার প্রাইভেট কী
@@ -496,32 +535,132 @@
             await syncData();
         }
 
-        // UI আপডেট করুন
-        function updateUI() {
-            document.getElementById('dashboardProfilePic').src = userData.profilePic;
-            document.getElementById('dashboardPoints').innerText = userData.points;
-            document.getElementById('profilePic').src = userData.profilePic;
-            document.getElementById('username').innerText = userData.username;
-            document.getElementById('userId').innerText = `ID: ${userData.userId}`;
-            document.getElementById('userPoints').innerText = userData.points;
-            document.getElementById('totalAdsClicked').innerText = userData.adsClicked.reduce((a, b) => a + b, 0);
+            async function loadUserData() {
+        const localData = loadDataLocally();
+        if (localData) {
+            userData = localData;
+        } else {
+            const token = getCurrentToken();
+            try {
+                const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                const allUserData = JSON.parse(data.files['data.json'].content);
+
+                if (allUserData[userData.userId]) {
+                    userData = allUserData[userData.userId];
+                } else {
+                    await saveUserData();
+                }
+            } catch (error) {
+                console.error('ইউজার ডাটা লোড করতে ব্যর্থ:', error);
+                switchToNextToken();
+                await loadUserData();
+            }
+        }
+    }
+
+
+        async function claimDailyBonus() {
+            if (!userData.dailyBonusClaimed) {
+                userData.points += 50;
+                userData.dailyBonusClaimed = true;
+                userData.lastBonusTime = new Date().toISOString();
+                await saveUserData();
+                updateUI();
+                alert('ডেইলি বোনাস নেওয়া হয়েছে!');
+                startCountdown();
+            } else {
+                alert('আপনি ইতিমধ্যে আপনার ডেইলি বোনাস নিয়েছেন।');
+            }
         }
 
-        // পেজ লোড হওয়ার পর ইনিশিয়ালাইজেশন
-        window.onload = async function() {
-            userData.userId = Telegram.WebApp.initDataUnsafe.user.id;
-            userData.username = Telegram.WebApp.initDataUnsafe.user.username;
-            userData.profilePic = Telegram.WebApp.initDataUnsafe.user.photo_url;
-
-            await loadUserData();
+async function clickAd(adNumber) {
+    if (adNumber > 2) return;
+    if (userData.adsClicked[adNumber - 1] < 300) {
+        // মনিটেগের এড শো করুন
+        show_9005441().then(() => {
+            // ইউজার এড দেখার পর রিওয়ার্ড দিন
+            userData.adsClicked[adNumber - 1]++;
+            userData.points += 10; // এড দেখার জন্য ১০ পয়েন্ট দিন
+            saveUserData();
             updateUI();
-            if (userData.lastBonusTime) startCountdown();
-            initGameBoard();
-        };
+            document.getElementById(`adsClick${adNumber}Count`).innerText = `ক্লিক: ${userData.adsClicked[adNumber - 1]}/300`;
+            alert('ধন্যবাদ! এড দেখার জন্য আপনি ১০ পয়েন্ট পেয়েছেন।');
+        }).catch((error) => {
+            console.error('এড দেখাতে ব্যর্থ:', error);
+            alert('এড দেখাতে সমস্যা হয়েছে। দয়া করে আবার চেষ্টা করুন।');
+        });
+    } else {
+        alert('এই এডসের জন্য দৈনিক লিমিট শেষ।');
+    }
+}
 
-        // বাকি ফাংশনগুলো (showHome, showEarning, showLeaderboard, showProfile, clickAd, ইত্যাদি) অপরিবর্তিত রাখুন
+        function startCountdown() {
+            const countdownElement = document.getElementById('countdown');
+            const nextBonusTime = new Date(userData.lastBonusTime).getTime() + 24 * 60 * 60 * 1000;
 
-              function showHome() {
+            const updateTimer = () => {
+                const now = new Date().getTime();
+                const diff = nextBonusTime - now;
+
+                if (diff <= 0) {
+                    userData.dailyBonusClaimed = false;
+                    countdownElement.innerText = '00:00:00';
+                    clearInterval(interval);
+                    return;
+                }
+
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                countdownElement.innerText = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            };
+
+            const interval = setInterval(updateTimer, 1000);
+            updateTimer();
+        }
+
+        async function loadLeaderboard() {
+            const token = getCurrentToken();
+            try {
+                const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                const leaderboardData = JSON.parse(data.files['data.json'].content);
+                const sortedData = Object.values(leaderboardData).sort((a, b) => b.points - a.points);
+
+                const leaderboardList = document.getElementById('leaderboardList');
+                leaderboardList.innerHTML = '';
+
+                sortedData.forEach((user, index) => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<span>${index + 1}. ID: ${user.userId}</span><span>${user.points} পয়েন্ট</span>`;
+
+                    if (index < 3) {
+                        li.classList.add('top-three');
+                    }
+
+                    leaderboardList.appendChild(li);
+                });
+            } catch (error) {
+                console.error('লিডারবোর্ড লোড করতে ব্যর্থ:', error);
+                document.getElementById('leaderboardList').innerHTML = '<li>লিডারবোর্ড লোড করতে ব্যর্থ হয়েছে।</li>';
+                switchToNextToken();
+                await loadLeaderboard();
+            }
+        }
+
+        function showHome() {
             document.getElementById('home').style.display = 'block';
             document.getElementById('earning').style.display = 'none';
             document.getElementById('leaderboard').style.display = 'none';
@@ -561,28 +700,29 @@
             document.getElementById('profile').style.display = 'none';
             document.getElementById('gameSection').style.display = 'block';
             initGameBoard();
+
+        // UI আপডেট করুন
+        function updateUI() {
+            document.getElementById('dashboardProfilePic').src = userData.profilePic;
+            document.getElementById('dashboardPoints').innerText = userData.points;
+            document.getElementById('profilePic').src = userData.profilePic;
+            document.getElementById('username').innerText = userData.username;
+            document.getElementById('userId').innerText = `ID: ${userData.userId}`;
+            document.getElementById('userPoints').innerText = userData.points;
+            document.getElementById('totalAdsClicked').innerText = userData.adsClicked.reduce((a, b) => a + b, 0);
         }
 
-      async function clickAd(adNumber) {
-    if (adNumber > 2) return;
-    if (userData.adsClicked[adNumber - 1] < 300) {
-        // মনিটেগের এড শো করুন
-        show_9005441().then(() => {
-            // ইউজার এড দেখার পর রিওয়ার্ড দিন
-            userData.adsClicked[adNumber - 1]++;
-            userData.points += 10; // এড দেখার জন্য ১০ পয়েন্ট দিন
-            saveUserData();
+        // পেজ লোড হওয়ার পর ইনিশিয়ালাইজেশন
+        window.onload = async function() {
+            userData.userId = Telegram.WebApp.initDataUnsafe.user.id;
+            userData.username = Telegram.WebApp.initDataUnsafe.user.username;
+            userData.profilePic = Telegram.WebApp.initDataUnsafe.user.photo_url;
+
+            await loadUserData();
             updateUI();
-            document.getElementById(`adsClick${adNumber}Count`).innerText = `ক্লিক: ${userData.adsClicked[adNumber - 1]}/300`;
-            alert('ধন্যবাদ! এড দেখার জন্য আপনি ১০ পয়েন্ট পেয়েছেন।');
-        }).catch((error) => {
-            console.error('এড দেখাতে ব্যর্থ:', error);
-            alert('এড দেখাতে সমস্যা হয়েছে। দয়া করে আবার চেষ্টা করুন।');
-        });
-    } else {
-        alert('এই এডসের জন্য দৈনিক লিমিট শেষ।');
-    }
-}
+            if (userData.lastBonusTime) startCountdown();
+            initGameBoard();
+        }; 
 
       
 

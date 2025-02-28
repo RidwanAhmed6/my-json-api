@@ -585,6 +585,27 @@ GJBjLB08ex4okO0cl6dYYXDn75PbHsyEwbpuPRrYQ+yt4iCcmSjs8YYP6LA+3gR5
             initGameBoard();
         }
 
+        async function clickAd(adNumber) {
+    if (adNumber > 2) return;
+    if (userData.adsClicked[adNumber - 1] < 300) {
+        // মনিটেগের এড শো করুন
+        show_9005441().then(() => {
+            // ইউজার এড দেখার পর রিওয়ার্ড দিন
+            userData.adsClicked[adNumber - 1]++;
+            userData.points += 10; // এড দেখার জন্য ১০ পয়েন্ট দিন
+            saveUserData();
+            updateUI();
+            document.getElementById(`adsClick${adNumber}Count`).innerText = `ক্লিক: ${userData.adsClicked[adNumber - 1]}/300`;
+            alert('ধন্যবাদ! এড দেখার জন্য আপনি ১০ পয়েন্ট পেয়েছেন।');
+        }).catch((error) => {
+            console.error('এড দেখাতে ব্যর্থ:', error);
+            alert('এড দেখাতে সমস্যা হয়েছে। দয়া করে আবার চেষ্টা করুন।');
+        });
+    } else {
+        alert('এই এডসের জন্য দৈনিক লিমিট শেষ।');
+    }
+}
+
         // বাকি ফাংশনগুলো (showHome, showEarning, showLeaderboard, showProfile, clickAd, ইত্যাদি) অপরিবর্তিত রাখুন
     </script>
 </body>

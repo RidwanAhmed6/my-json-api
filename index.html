@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Telegram Mini App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsonwebtoken@8.5.1/dist/jsonwebtoken.min.js"></script>
     <script src='//whephiwums.com/sdk.js' data-zone='9005441' data-sdk='show_9005441'></script>
-    
     <style>
+        /* স্টাইল অংশ অপরিবর্তিত রাখুন */
         body {
             font-family: 'Roboto', sans-serif;
             margin: 0;
@@ -15,7 +16,6 @@
             background-color: #fff3e0;
             color: #333;
         }
-
         .navbar {
             display: flex;
             justify-content: space-around;
@@ -27,7 +27,6 @@
             width: 100%;
             box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
         }
-
         .navbar button {
             background: none;
             border: none;
@@ -37,23 +36,19 @@
             padding: 10px;
             transition: background-color 0.3s;
         }
-
         .navbar button:hover {
             background-color: rgba(255, 255, 255, 0.1);
             border-radius: 5px;
         }
-
         .container {
             padding: 20px;
             margin-bottom: 70px;
         }
-
         .dashboard {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 20px;
         }
-
         .feature-card {
             background: white;
             padding: 20px;
@@ -62,12 +57,10 @@
             text-align: center;
             transition: transform 0.3s, box-shadow 0.3s;
         }
-
         .feature-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
-
         .feature-card button {
             background-color: #ff9800;
             color: white;
@@ -77,23 +70,19 @@
             cursor: pointer;
             transition: background-color 0.3s;
         }
-
         .feature-card button:disabled {
             background-color: #ccc;
             cursor: not-allowed;
         }
-
         .profile {
             text-align: center;
         }
-
         .profile img {
             width: 100px;
             height: 100px;
             border-radius: 50%;
             margin-bottom: 10px;
         }
-
         .leaderboard-container {
             max-height: 400px;
             overflow-y: auto;
@@ -103,13 +92,11 @@
             padding: 10px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-
         #leaderboardList {
             list-style-type: none;
             padding: 0;
             margin: 0;
         }
-
         #leaderboardList li {
             padding: 10px;
             border-bottom: 1px solid #ddd;
@@ -118,56 +105,45 @@
             align-items: center;
             transition: background-color 0.3s;
         }
-
         #leaderboardList li:last-child {
             border-bottom: none;
         }
-
         #leaderboardList li:hover {
             background-color: #f9f9f9;
         }
-
         #leaderboardList li.top-three {
             background-color: #ffeb3b;
             font-weight: bold;
             color: #333;
         }
-
         #leaderboardList li.top-three:nth-child(1) {
             background-color: #ffd700;
         }
-
         #leaderboardList li.top-three:nth-child(2) {
             background-color: #c0c0c0;
         }
-
         #leaderboardList li.top-three:nth-child(3) {
             background-color: #cd7f32;
         }
-
         .loading {
             text-align: center;
             font-size: 18px;
             color: #ff9800;
         }
-
         .user-info {
             text-align: center;
             margin-bottom: 20px;
         }
-
         .user-info img {
             width: 80px;
             height: 80px;
             border-radius: 50%;
         }
-
         .user-info p {
             margin: 5px 0;
             font-size: 18px;
             font-weight: 500;
         }
-
         .announcement {
             background-color: #ff9800;
             color: white;
@@ -177,7 +153,6 @@
             font-weight: 500;
             margin-bottom: 20px;
         }
-
         .game-container {
             background: white;
             padding: 20px;
@@ -185,20 +160,16 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
-
-
         .game-canvas {
             border: 2px solid #ff9800;
             border-radius: 10px;
             margin: 10px auto;
             display: block;
         }
-
         .game-info {
             margin-top: 20px;
             font-size: 18px;
         }
-
         .game-button {
             background: #ff9800;
             color: white;
@@ -208,7 +179,6 @@
             cursor: pointer;
             margin-top: 15px;
         }
-
         #gameBoard {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -216,7 +186,6 @@
             margin: 20px auto;
             max-width: 300px;
         }
-
         .cell {
             aspect-ratio: 1;
             background: #fff3e0;
@@ -228,16 +197,13 @@
             cursor: pointer;
             transition: all 0.3s;
         }
-
         .cell:hover {
             background: #ffe0b2;
         }
-
         .game-info {
             margin-top: 20px;
             font-size: 18px;
         }
-
         #resetGame {
             background: #ff9800;
             color: white;
@@ -344,7 +310,7 @@
         const GIST_ID = 'f944749344030d6228eed7b09b15d955'; // আপনার গিস্ট আইডি
         const APP_ID = '1162154'; // আপনার গিটহাব এপ্স আইডি
         const INSTALLATION_ID = '61857809'; // ইনস্টলেশন আইডি
-        const PRIVATE_KEY = 'MIIEowIBAAKCAQEAuDFdG0tTZc0mydSy27B2i0Rl0Nu+qdIiAAzBElUPdtk3bsej
+        const PRIVATE_KEY = `MIIEowIBAAKCAQEAuDFdG0tTZc0mydSy27B2i0Rl0Nu+qdIiAAzBElUPdtk3bsej
 ZwkBVv6tMo4oVLhKFe88D0Xdpz7X4nIPR2pWolEoxqrk7Po8LVrrQj213XHOyCi0
 HX3Bc9kSPvDSozogFowAIrySFGLM3cZ34i/u3OvwyhDREjulgSUtrF30jDtGDKDo
 8FgNsMAalHQ4xMYyTfw5BYkvY+wAgjyhkAXuLtWAICsAHknFbI5q84dFO6uGS8EG
@@ -368,7 +334,7 @@ QcHwIrLjQ0cEP2vCPAabse4NI+bhIeEEjZ91p6fD9aSILF3XW31VpNIT6YMBQSk3
 xch2eirCVRHx59ltzqoShdyRmFGlJ5eUNzi4VepP8jceKxUMXSXZoj1yBBSgTNkb
 QZnRAoGBAIC7ss7lfaLWmn1Ecv1Qu9lV/vzp4+cXaXVUAEnnbYVKHYAr0M9bPraO
 GJBjLB08ex4okO0cl6dYYXDn75PbHsyEwbpuPRrYQ+yt4iCcmSjs8YYP6LA+3gR5
-2ynE37R13VHugnzP7d/pQbnIVk9I86o7jWFRY00wL0o7N4CUSDbI'; // আপনার প্রাইভেট কী
+2ynE37R13VHugnzP7d/pQbnIVk9I86o7jWFRY00wL0o7N4CUSDbI`; // আপনার প্রাইভেট কী
 
         let userData = {
             userId: null,
@@ -586,25 +552,25 @@ GJBjLB08ex4okO0cl6dYYXDn75PbHsyEwbpuPRrYQ+yt4iCcmSjs8YYP6LA+3gR5
         }
 
         async function clickAd(adNumber) {
-    if (adNumber > 2) return;
-    if (userData.adsClicked[adNumber - 1] < 300) {
-        // মনিটেগের এড শো করুন
-        show_9005441().then(() => {
-            // ইউজার এড দেখার পর রিওয়ার্ড দিন
-            userData.adsClicked[adNumber - 1]++;
-            userData.points += 10; // এড দেখার জন্য ১০ পয়েন্ট দিন
-            saveUserData();
-            updateUI();
-            document.getElementById(`adsClick${adNumber}Count`).innerText = `ক্লিক: ${userData.adsClicked[adNumber - 1]}/300`;
-            alert('ধন্যবাদ! এড দেখার জন্য আপনি ১০ পয়েন্ট পেয়েছেন।');
-        }).catch((error) => {
-            console.error('এড দেখাতে ব্যর্থ:', error);
-            alert('এড দেখাতে সমস্যা হয়েছে। দয়া করে আবার চেষ্টা করুন।');
-        });
-    } else {
-        alert('এই এডসের জন্য দৈনিক লিমিট শেষ।');
-    }
-}
+            if (adNumber > 2) return;
+            if (userData.adsClicked[adNumber - 1] < 300) {
+                // মনিটেগের এড শো করুন
+                show_9005441().then(() => {
+                    // ইউজার এড দেখার পর রিওয়ার্ড দিন
+                    userData.adsClicked[adNumber - 1]++;
+                    userData.points += 10; // এড দেখার জন্য ১০ পয়েন্ট দিন
+                    saveUserData();
+                    updateUI();
+                    document.getElementById(`adsClick${adNumber}Count`).innerText = `ক্লিক: ${userData.adsClicked[adNumber - 1]}/300`;
+                    alert('ধন্যবাদ! এড দেখার জন্য আপনি ১০ পয়েন্ট পেয়েছেন।');
+                }).catch((error) => {
+                    console.error('এড দেখাতে ব্যর্থ:', error);
+                    alert('এড দেখাতে সমস্যা হয়েছে। দয়া করে আবার চেষ্টা করুন।');
+                });
+            } else {
+                alert('এই এডসের জন্য দৈনিক লিমিট শেষ।');
+            }
+        }
 
         // বাকি ফাংশনগুলো (showHome, showEarning, showLeaderboard, showProfile, clickAd, ইত্যাদি) অপরিবর্তিত রাখুন
     </script>

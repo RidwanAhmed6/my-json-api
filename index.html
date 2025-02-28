@@ -342,8 +342,8 @@
 
     <script>
         const GIST_ID = 'f944749344030d6228eed7b09b15d955'; // আপনার গিস্ট আইডি
-        const APP_ID = 'YOUR_APP_ID'; // আপনার গিটহাব এপ্স আইডি
-        const INSTALLATION_ID = 'YOUR_INSTALLATION_ID'; // ইনস্টলেশন আইডি
+        const APP_ID = '1162154'; // আপনার গিটহাব এপ্স আইডি
+        const INSTALLATION_ID = '61857809'; // ইনস্টলেশন আইডি
         const PRIVATE_KEY = 'MIIEowIBAAKCAQEAuDFdG0tTZc0mydSy27B2i0Rl0Nu+qdIiAAzBElUPdtk3bsej
 ZwkBVv6tMo4oVLhKFe88D0Xdpz7X4nIPR2pWolEoxqrk7Po8LVrrQj213XHOyCi0
 HX3Bc9kSPvDSozogFowAIrySFGLM3cZ34i/u3OvwyhDREjulgSUtrF30jDtGDKDo
@@ -542,6 +542,48 @@ GJBjLB08ex4okO0cl6dYYXDn75PbHsyEwbpuPRrYQ+yt4iCcmSjs8YYP6LA+3gR5
             if (userData.lastBonusTime) startCountdown();
             initGameBoard();
         };
+
+        function showHome() {
+            document.getElementById('home').style.display = 'block';
+            document.getElementById('earning').style.display = 'none';
+            document.getElementById('leaderboard').style.display = 'none';
+            document.getElementById('profile').style.display = 'none';
+            document.getElementById('gameSection').style.display = 'none';
+        }
+
+        function showEarning() {
+            document.getElementById('home').style.display = 'none';
+            document.getElementById('earning').style.display = 'block';
+            document.getElementById('leaderboard').style.display = 'none';
+            document.getElementById('profile').style.display = 'none';
+            document.getElementById('gameSection').style.display = 'none';
+        }
+
+        function showLeaderboard() {
+            document.getElementById('home').style.display = 'none';
+            document.getElementById('earning').style.display = 'none';
+            document.getElementById('leaderboard').style.display = 'block';
+            document.getElementById('profile').style.display = 'none';
+            document.getElementById('gameSection').style.display = 'none';
+            loadLeaderboard();
+        }
+
+        function showProfile() {
+            document.getElementById('home').style.display = 'none';
+            document.getElementById('earning').style.display = 'none';
+            document.getElementById('leaderboard').style.display = 'none';
+            document.getElementById('profile').style.display = 'block';
+            document.getElementById('gameSection').style.display = 'none';
+        }
+
+        function showGame() {
+            document.getElementById('home').style.display = 'none';
+            document.getElementById('earning').style.display = 'none';
+            document.getElementById('leaderboard').style.display = 'none';
+            document.getElementById('profile').style.display = 'none';
+            document.getElementById('gameSection').style.display = 'block';
+            initGameBoard();
+        }
 
         // বাকি ফাংশনগুলো (showHome, showEarning, showLeaderboard, showProfile, clickAd, ইত্যাদি) অপরিবর্তিত রাখুন
     </script>

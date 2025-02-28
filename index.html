@@ -392,32 +392,48 @@ async function getGitHubToken() {
 
 // গিস্ট ডাটা ফেচ করুন
 async function fetchGistData() {
-    const token = await getGitHubToken();
-    const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
-        headers: { Authorization: `token ${token}` }
-    });
-    const gist = await response.json();
-    return JSON.parse(gist.files['data.json'].content);
+    try {
+        const token = await getGitHubToken();
+        const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+            headers: { Authorization: `token ${token}` }
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const gist = await response.json();
+        return JSON.parse(gist.files['data.json'].content);
+    } catch (error) {
+        console.error('গিস্ট ডাটা ফেচ করতে ব্যর্থ:', error);
+        return null;
+    }
 }
 
 // গিস্ট ডাটা আপডেট করুন
 async function updateGistData(data) {
-    const token = await getGitHubToken();
-    const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
-        method: 'PATCH',
-        headers: {
-            Authorization: `token ${token}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            files: {
-                'data.json': {
-                    content: JSON.stringify(data)
+    try {
+        const token = await getGitHubToken();
+        const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+            method: 'PATCH',
+            headers: {
+                Authorization: `token ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                files: {
+                    'data.json': {
+                        content: JSON.stringify(data)
+                    }
                 }
-            }
-        })
-    });
-    return response.ok;
+            })
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return true;
+    } catch (error) {
+        console.error('গিস্ট ডাটা আপডেট করতে ব্যর্থ:', error);
+        return false;
+    }
 }
 
 // লোকাল স্টোরেজে ডাটা সেভ করুন
@@ -436,10 +452,12 @@ async function syncData() {
     if (localData) {
         try {
             const remoteData = await fetchGistData();
-            const mergedData = mergeData(localData, remoteData);
-            await updateGistData(mergedData);
-            localStorage.removeItem('userData');
-            console.log('ডাটা সিঙ্ক করা হয়েছে:', localData);
+            if (remoteData) {
+                const mergedData = mergeData(localData, remoteData);
+                await updateGistData(mergedData);
+                localStorage.removeItem('userData');
+                console.log('ডাটা সিঙ্ক করা হয়েছে:', localData);
+            }
         } catch (error) {
             console.error('ডাটা সিঙ্ক করতে ব্যর্থ:', error);
         }
@@ -471,7 +489,7 @@ async function loadUserData() {
     } else {
         try {
             const remoteData = await fetchGistData();
-            if (remoteData[userData.userId]) {
+            if (remoteData && remoteData[userData.userId]) {
                 userData = remoteData[userData.userId];
             } else {
                 await saveUserData();

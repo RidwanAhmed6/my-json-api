@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel</title>
+</head>
+<body>
+  <h1>Admin Panel</h1>
+  <form id="editForm">
+    <label for="userId">User ID:</label>
+    <input type="text" id="userId" name="userId" required><br>
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required><br>
+    <label for="points">Points:</label>
+    <input type="number" id="points" name="points" required><br>
+    <button type="submit">Update</button>
+  </form>
+
+  <script>
+    const form = document.getElementById('editForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const userId = document.getElementById('userId').value;
+      const username = document.getElementById('username').value;
+      const points = document.getElementById('points').value;
+
+      try {
+        const response = await fetch(`/api/user/${userId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, points })
+        });
+        const data = await response.json();
+        console.log('আপডেট করা ইউজার:', data);
+        alert('ইউজার ডাটা আপডেট করা হয়েছে!');
+      } catch (error) {
+        console.error('ডাটা আপডেট করতে ব্যর্থ:', error);
+        alert('ডাটা আপডেট করতে ব্যর্থ হয়েছে। দয়া করে আবার চেষ্টা করুন।');
+      }
+    });
+  </script>
+</body>
+</html>
